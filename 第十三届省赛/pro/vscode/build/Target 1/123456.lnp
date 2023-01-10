@@ -1,0 +1,2 @@
+".\build\Target 1\__\__\scr\ds1302.o",".\build\Target 1\__\__\scr\function.o",".\build\Target 1\__\__\scr\main.o",".\build\Target 1\__\__\scr\onewire.o",".\build\Target 1\__\keil\STARTUP.o" TO ".\build\Target 1\123456"
+PRINT(".\build\Target 1\123456.map") REMOVEUNUSED

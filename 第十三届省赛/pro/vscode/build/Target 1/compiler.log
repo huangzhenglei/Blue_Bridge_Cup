@@ -1,0 +1,14 @@
+>>> cc
+
+
+
+>>> ld
+
+
+LX51 LINKER/LOCATER V4.66.97.0 - SN: K1DZC-1T4I0C
+COPYRIGHT ARM Germany GmbH 1995 - 2019
+"@c:\Users\hzl\Desktop\题目\第十三届省赛\pro\vscode\build\Target 1\123456.lnp" ".\build\Target 1\__\__\scr\ds1302.o",".\build\Target 1\__\__\scr\function.o",".\build\Target 1\__\__\scr\main.o",".\build\Target 1\__\__\scr\onewire.o",".\build\Target 1\__\keil\STARTUP.o" TO ".\build\Target 1\123456"
+PRINT(".\build\Target 1\123456.map") REMOVEUNUSED
+
+Program Size: data=30.1 xdata=0 const=31 code=2305
+LX51 RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

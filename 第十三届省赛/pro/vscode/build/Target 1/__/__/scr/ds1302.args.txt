@@ -1,0 +1,1 @@
+.\..\..\scr\ds1302.c OMF2 TABS(4) CODE NOCOND SYMBOLS PRINT(".\build\Target 1\__\__\scr\ds1302.lst") INCDIR(D:/Keil_v5/C51/INC/STC;D:/Keil_v5/C51/INC) DEFINE(__UVISION_VERSION='526') OPTIMIZE(8,SPEED) SMALL ROM(LARGE) OBJECT(".\build\Target 1\__\__\scr\ds1302.o")
