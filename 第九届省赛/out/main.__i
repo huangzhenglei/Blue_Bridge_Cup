@@ -1,0 +1,1 @@
+"..\..\scr\main.c" OPTIMIZE (8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.lst) OBJECT(..\..\out\main.obj)

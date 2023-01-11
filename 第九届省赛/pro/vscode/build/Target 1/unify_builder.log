@@ -1,0 +1,294 @@
+[2023-01-05 16:29:45]	[done]
+	build successfully !
+
+[2023-01-05 16:30:09]	[done]
+	build successfully !
+
+[2023-01-05 16:33:24]	[done]
+	build successfully !
+
+[2023-01-05 16:34:06]	[done]
+	build successfully !
+
+[2023-01-05 16:34:29]	[done]
+	build successfully !
+
+[2023-01-05 16:45:04]	compilation failed at : "c:\Users\hzl\Desktop\题目\第九届省赛\scr\main.c", exit code: 2
+   at unify_builder.Program.Main(String[] args_)
+---
+C51 COMPILER V9.60.0.0 - SN: K1DZC-1T4I0C
+COPYRIGHT Copyright (C) 2012 - 2019 ARM Ltd and ARM Germany GmbH. All rights reserved.
+*** ERROR C141 IN LINE 127 OF .\..\..\SCR\MAIN.C: syntax error near ')', expected 'sizeof'
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  1 ERROR(S)
+
+[2023-01-05 16:45:16]	[done]
+	build successfully !
+
+[2023-01-05 16:45:33]	[done]
+	build successfully !
+
+[2023-01-05 16:46:10]	[done]
+	build successfully !
+
+[2023-01-05 16:47:01]	[done]
+	build successfully !
+
+[2023-01-05 16:47:22]	[done]
+	build successfully !
+
+[2023-01-05 16:47:42]	[done]
+	build successfully !
+
+[2023-01-05 16:49:24]	compilation failed at : "c:\Users\hzl\Desktop\题目\第九届省赛\scr\main.c", exit code: 2
+   at unify_builder.Program.Main(String[] args_)
+---
+C51 COMPILER V9.60.0.0 - SN: K1DZC-1T4I0C
+COPYRIGHT Copyright (C) 2012 - 2019 ARM Ltd and ARM Germany GmbH. All rights reserved.
+*** ERROR C141 IN LINE 141 OF .\..\..\SCR\MAIN.C: syntax error near '4', expected ','
+*** ERROR C141 IN LINE 141 OF .\..\..\SCR\MAIN.C: syntax error near ')', expected ';'
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  2 ERROR(S)
+
+[2023-01-05 16:49:35]	[done]
+	build successfully !
+
+[2023-01-05 16:49:51]	[done]
+	build successfully !
+
+[2023-01-05 16:50:35]	[done]
+	build successfully !
+
+[2023-01-05 16:50:57]	[done]
+	build successfully !
+
+[2023-01-05 16:52:01]	[done]
+	build successfully !
+
+[2023-01-05 16:53:46]	[done]
+	build successfully !
+
+[2023-01-05 16:54:20]	[done]
+	build successfully !
+
+[2023-01-05 16:55:59]	[done]
+	build successfully !
+
+[2023-01-05 16:56:17]	[done]
+	build successfully !
+
+[2023-01-05 16:56:33]	[done]
+	build successfully !
+
+[2023-01-05 17:02:13]	[done]
+	build successfully !
+
+[2023-01-05 17:05:38]	[done]
+	build successfully !
+
+[2023-01-05 17:06:50]	[done]
+	build successfully !
+
+[2023-01-05 17:07:32]	[done]
+	build successfully !
+
+[2023-01-05 17:09:37]	[done]
+	build successfully !
+
+[2023-01-05 17:11:52]	[done]
+	build successfully !
+
+[2023-01-05 17:12:04]	[done]
+	build successfully !
+
+[2023-01-05 17:12:55]	[done]
+	build successfully !
+
+[2023-01-05 17:13:20]	[done]
+	build successfully !
+
+[2023-01-05 17:14:21]	[done]
+	build successfully !
+
+[2023-01-05 17:15:01]	[done]
+	build successfully !
+
+[2023-01-05 17:15:22]	[done]
+	build successfully !
+
+[2023-01-05 17:15:37]	[done]
+	build successfully !
+
+[2023-01-05 17:16:00]	[done]
+	build successfully !
+
+[2023-01-05 17:16:22]	[done]
+	build successfully !
+
+[2023-01-05 17:19:42]	[done]
+	build successfully !
+
+[2023-01-05 17:19:50]	[done]
+	build successfully !
+
+[2023-01-05 17:20:06]	[done]
+	build successfully !
+
+[2023-01-05 17:21:57]	[done]
+	build successfully !
+
+[2023-01-05 17:22:37]	[done]
+	build successfully !
+
+[2023-01-05 17:22:57]	[done]
+	build successfully !
+
+[2023-01-05 17:23:18]	[done]
+	build successfully !
+
+[2023-01-05 17:25:11]	[done]
+	build successfully !
+
+[2023-01-05 17:26:11]	compilation failed at : "c:\Users\hzl\Desktop\题目\第九届省赛\scr\main.c", exit code: 2
+   at unify_builder.Program.Main(String[] args_)
+---
+C51 COMPILER V9.60.0.0 - SN: K1DZC-1T4I0C
+COPYRIGHT Copyright (C) 2012 - 2019 ARM Ltd and ARM Germany GmbH. All rights reserved.
+*** ERROR C141 IN LINE 55 OF .\..\..\SCR\MAIN.C: syntax error near ')', expected 'sizeof'
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  1 ERROR(S)
+
+[2023-01-05 17:26:21]	compilation failed at : "c:\Users\hzl\Desktop\题目\第九届省赛\scr\main.c", exit code: 2
+   at unify_builder.Program.Main(String[] args_)
+---
+C51 COMPILER V9.60.0.0 - SN: K1DZC-1T4I0C
+COPYRIGHT Copyright (C) 2012 - 2019 ARM Ltd and ARM Germany GmbH. All rights reserved.
+*** ERROR C202 IN LINE 55 OF .\..\..\SCR\MAIN.C: 'date': undefined identifier
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  1 ERROR(S)
+
+[2023-01-05 17:26:33]	[done]
+	build successfully !
+
+[2023-01-05 17:26:57]	[done]
+	build successfully !
+
+[2023-01-05 17:27:11]	[done]
+	build successfully !
+
+[2023-01-05 17:27:27]	[done]
+	build successfully !
+
+[2023-01-05 17:27:56]	[done]
+	build successfully !
+
+[2023-01-05 17:28:12]	[done]
+	build successfully !
+
+[2023-01-05 17:28:34]	compilation failed at : "c:\Users\hzl\Desktop\题目\第九届省赛\scr\main.c", exit code: 2
+   at unify_builder.Program.Main(String[] args_)
+---
+C51 COMPILER V9.60.0.0 - SN: K1DZC-1T4I0C
+COPYRIGHT Copyright (C) 2012 - 2019 ARM Ltd and ARM Germany GmbH. All rights reserved.
+*** ERROR C202 IN LINE 52 OF .\..\..\SCR\MAIN.C: 'date': undefined identifier
+*** ERROR C202 IN LINE 53 OF .\..\..\SCR\MAIN.C: 'date': undefined identifier
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  2 ERROR(S)
+
+[2023-01-05 17:28:49]	[done]
+	build successfully !
+
+[2023-01-05 17:38:31]	[done]
+	build successfully !
+
+[2023-01-05 17:38:59]	[done]
+	build successfully !
+
+[2023-01-05 17:39:20]	[done]
+	build successfully !
+
+[2023-01-05 17:39:23]	[done]
+	build successfully !
+
+[2023-01-05 17:39:58]	[done]
+	build successfully !
+
+[2023-01-05 17:40:16]	compilation failed at : "c:\Users\hzl\Desktop\题目\第九届省赛\scr\main.c", exit code: 2
+   at unify_builder.Program.Main(String[] args_)
+---
+C51 COMPILER V9.60.0.0 - SN: K1DZC-1T4I0C
+COPYRIGHT Copyright (C) 2012 - 2019 ARM Ltd and ARM Germany GmbH. All rights reserved.
+*** ERROR C208 IN LINE 37 OF .\..\..\SCR\MAIN.C: '_EEPROM_Read': too many actual parameters
+*** ERROR C187 IN LINE 187 OF .\..\..\SCR\MAIN.C: not an lvalue
+*** ERROR C187 IN LINE 198 OF .\..\..\SCR\MAIN.C: not an lvalue
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  3 ERROR(S)
+
+[2023-01-05 17:40:51]	compilation failed at : "c:\Users\hzl\Desktop\题目\第九届省赛\scr\main.c", exit code: 2
+   at unify_builder.Program.Main(String[] args_)
+---
+C51 COMPILER V9.60.0.0 - SN: K1DZC-1T4I0C
+COPYRIGHT Copyright (C) 2012 - 2019 ARM Ltd and ARM Germany GmbH. All rights reserved.
+*** ERROR C208 IN LINE 37 OF .\..\..\SCR\MAIN.C: '_EEPROM_Read': too many actual parameters
+*** ERROR C187 IN LINE 187 OF .\..\..\SCR\MAIN.C: not an lvalue
+*** ERROR C187 IN LINE 198 OF .\..\..\SCR\MAIN.C: not an lvalue
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  3 ERROR(S)
+
+[2023-01-05 17:41:01]	[done]
+	build successfully !
+
+[2023-01-05 17:41:18]	[done]
+	build successfully !
+
+[2023-01-05 19:46:18]	[done]
+	build successfully !
+
+[2023-01-05 19:47:14]	[done]
+	build successfully !
+
+[2023-01-05 19:48:05]	[done]
+	build successfully !
+
+[2023-01-09 18:45:06]	[done]
+	build successfully !
+
+[2023-01-09 18:45:18]	[done]
+	build successfully !
+
+[2023-01-11 10:33:14]	[done]
+	build successfully !
+
+[2023-01-11 10:35:01]	[done]
+	build successfully !
+
+[2023-01-11 10:36:18]	[done]
+	build successfully !
+
+[2023-01-11 10:37:40]	[done]
+	build successfully !
+
+[2023-01-11 10:41:00]	[done]
+	build successfully !
+
+[2023-01-11 10:43:50]	[done]
+	build successfully !
+
+[2023-01-11 10:45:27]	[done]
+	build successfully !
+
+[2023-01-11 10:45:54]	[done]
+	build successfully !
+
+[2023-01-11 10:47:03]	[done]
+	build successfully !
+
+[2023-01-11 10:49:19]	[done]
+	build successfully !
+
+[2023-01-11 10:49:47]	[done]
+	build successfully !
+
+[2023-01-11 10:50:58]	[done]
+	build successfully !
+
