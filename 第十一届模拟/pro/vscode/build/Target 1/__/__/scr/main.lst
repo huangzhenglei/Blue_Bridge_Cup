@@ -1,0 +1,1096 @@
+C51 COMPILER V9.60.0.0   MAIN                                                              01/15/2023 16:03:28 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\build\Target 1\__\__\scr\main.o
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.exe .\..\..\SCR\MAIN.C OMF2 TABS(4) CODE NOCOND SYMBOLS PRINT(.\build\Target
+                    - 1\__\__\scr\main.lst) INCDIR(D:/Keil_v5/C51/INC/STC;D:/Keil_v5/C51/INC) DEFINE(__UVISION_VERSION=526) OPTIMIZE(8,SPEED)
+                    - SMALL ROM(LARGE) OBJECT(.\build\Target 1\__\__\scr\main.o)
+
+line level    source
+
+   1          #include <STC15F2K60S2.H>
+   2          #include "function.h"
+   3          #include "iic.h"
+   4          
+   5          u8 counter = 0;                             //¶¨Ê±Æ÷0¼ÆÊ±ÓÃ
+   6          u8 counter1 = 0;                            //¶¨Ê±Æ÷1¼ÆÊ±ÓÃ
+   7          u8 mode = Close_Mode;                       //¶¨ÒåÈ«¾Ö±äÁ¿mode£¬¿ØÖÆÄ£Ê½
+   8          
+   9          void Timer0_IT() interrupt 1                //¶¨Ê±Æ÷0ÖÐ¶Ï£¬¿ØÖÆÊäÈë´íÎóÊ±LED1ÁÁ5s
+  10          {
+  11   1          counter++;
+  12   1          if(counter >= 100)                      //µ½´ïÁË5s
+  13   1          {
+  14   2              ET0 = 0;                            //¶¨Ê±Æ÷0ÖÐ¶Ï¹Ø±Õ
+  15   2              counter = 0;                        //counterÖØÐÂ³õÊ¼»¯Îª0
+  16   2              Led_Ctrl(LED[1], GPIO_PIN_SET);     //¹Ø±ÕLED1
+  17   2              mode = Close_Mode;                  //Ä£Ê½ÇÐ»»ÎªClose_Mode
+  18   2          }
+  19   1      }
+  20          
+  21          void Timer1_IT() interrupt 3                //¶¨Ê±Æ÷1ÖÐ¶Ï£¬¿ØÖÆÊäÈëÕýÈ·Ê±
+  22          {
+  23   1          counter1++;
+  24   1          if(counter1 >= 100)                     //µ½´ïÁË5s
+  25   1          {
+  26   2              ET1 = 0;                            //¶¨Ê±Æ÷1ÖÐ¶Ï¹Ø±Õ
+  27   2              counter1 = 0;                       //counter1ÖØÐÂ³õÊ¼»¯Îª0
+  28   2              Relay_Ctrl(GPIO_PIN_RESET);         //¼ÌµçÆ÷¹Ø±Õ
+  29   2              mode = Close_Mode;                  //Ä£Ê½ÇÐ»»ÎªClose_Mode
+  30   2          }
+  31   1      }
+  32          
+  33          void main()
+  34          {
+  35   1          u8 key = No_Press;                      //½ÓÊÕ°´¼ü·µ»ØµÄÖµ£¬³õÊ¼»¯ÎªNo_Press
+  36   1          u8 password[7] = {8, 8, 8, 8, 8, 8, 8}; //ÃÜÂëÊý×é£¬³õÊ¼»¯ÃÜÂëÎª6¸ö8
+  37   1          u8 input_password[7] = {0};             //ÊäÈëÃÜÂëÊ±µÄÊý×é£¬³õÊ¼»¯Îª0
+  38   1          u8 password_flag = 0;                   //Êý×é¿ØÖÆ±äÁ¿
+  39   1      
+  40   1          Close();                                //³õÊ¼»¯£¬¹Ø±Õ¼ÌµçÆ÷ºÍ·äÃùÆ÷
+  41   1          Led_Ctrl(LED[0], GPIO_PIN_SET);         //³õÊ¼»¯£¬¹Ø±ÕËùÓÐLED
+  42   1          Timer0Init();                           //³õÊ¼»¯¶¨Ê±Æ÷0
+  43   1          Timer1Init();                           //³õÊ¼»¯¶¨Ê±Æ÷1
+  44   1          EA = 1;                                 //´ò¿ªÈ«¾ÖÖÐ¶Ï
+  45   1          ET0 = 0;                                //¹Ø±Õ¶¨Ê±Æ÷0ÖÐ¶Ï
+  46   1          ET1 = 0;                                //¹Ø±Õ¶¨Ê±Æ÷1ÖÐ¶Ï
+  47   1      
+  48   1          if(EEPROM_Read(0) != 125)               //ÅÐ¶ÏÊÇ·ñµÚÒ»´ÎÉÏµç
+  49   1          {
+  50   2              EEPROM_Write(0, 125);               //ÈôµÚÒ»´ÎÉÏµç£¬Íù0µØÖ·Ð´125£¬1~6µØÖ·Ð´ÃÜÂë6¸ö8
+  51   2              EEPROM_Write(1, password[1]);
+  52   2              EEPROM_Write(2, password[2]);
+  53   2              EEPROM_Write(3, password[3]);
+C51 COMPILER V9.60.0.0   MAIN                                                              01/15/2023 16:03:28 PAGE 2   
+
+  54   2              EEPROM_Write(4, password[4]);
+  55   2              EEPROM_Write(5, password[5]);
+  56   2              EEPROM_Write(6, password[6]);
+  57   2          }
+  58   1          else                                    //²»ÊÇµÚÒ»´ÎÉÏµç£¬´ÓµØÖ·1~6¶Á³öÃÜÂë
+  59   1          {
+  60   2              password[1] = EEPROM_Read(1);
+  61   2              password[2] = EEPROM_Read(2);
+  62   2              password[3] = EEPROM_Read(3);
+  63   2              password[4] = EEPROM_Read(4);
+  64   2              password[5] = EEPROM_Read(5);
+  65   2              password[6] = EEPROM_Read(6);
+  66   2          }
+  67   1      
+  68   1          while (1)
+  69   1          {
+  70   2              key = Key_Map();                    //ÊµÊ±½ÓÊÕ°´¼ü·µ»ØÖµ
+  71   2      
+  72   2              switch (mode)                       //Ä£Ê½¿ØÖÆ
+  73   2              {
+  74   3                  case Close_Mode:                //¹Ø±ÕÄ£Ê½
+  75   3      
+  76   3                      P2 = (P2 & 0X1F) | 0XC0;    //ÊýÂë¹ÜÈ«²¿¹Ø±Õ
+  77   3                      P0 = 0x00;
+  78   3                      P2 &= 0x1f;
+  79   3      
+  80   3                      if(key == s16)              //°´ÏÂs16½øÈëÊäÈëÃÜÂëÄ£Ê½
+  81   3                      {
+  82   4                          mode = Input_Mode;
+  83   4                          password_flag = 0;      //³õÊ¼»¯Êý×é¿ØÖÆ±äÁ¿Îª0
+  84   4                          Led_Ctrl(LED[7], GPIO_PIN_RESET);               //LED7´ò¿ª
+  85   4                      }
+  86   3                      
+  87   3                      break;
+  88   3      
+  89   3                  case Input_Mode:                                        //ÊäÈëÃÜÂëÄ£Ê½
+  90   3      
+  91   3                      Display_Passward(input_password, password_flag);    //ÏÔÊ¾ÊäÈëµÄÃÜÂë
+  92   3      
+  93   3                      if(0 <= key && key <= 9)                            //Èô°´¼ü·µ»Ø0~9£¬½øÈëÆäÖÐ
+  94   3                      {  
+  95   4                          if(password_flag != 6)                          //ÈôÊý×é¿ØÖÆ±äÁ¿password_flag²»µÈÓÚ6£¬
+             -ËµÃ÷Ã»ÓÐÃÜÂëÊäÈëÍê
+  96   4                          {
+  97   5                              password_flag++;                            //password_flagÏÈ×ÔÔö1
+  98   5                              input_password[password_flag] = key;        //½«°´¼üËù·µ»ØµÄÖµ·Åµ½ÊäÈëÃÜÂëÊý×éÖÐ
+  99   5      
+ 100   5                              if(password_flag == 6)                      //ÅÐ¶ÏÃÜÂëÊÇ·ñÊäÈëÍê³É
+ 101   5                              {
+ 102   6                                  int i = 1;                              //forÑ­»·¿ØÖÆ±äÁ¿   
+ 103   6                                  u8 flag = 0;                            //ÅÐ¶ÏÊÇ·ñÃÜÂëÕýÈ·±äÁ¿
+ 104   6      
+ 105   6                                  for(i = 1; i < 7; i++)                  //ÅÐ¶ÏÃÜÂëÊÇ·ñÕýÈ·
+ 106   6                                  {
+ 107   7                                      if(input_password[i] == password[i])
+ 108   7                                      {
+ 109   8                                          flag++;                         //ÃÜÂëÕýÈ·£¬flag×ÔÔö1
+ 110   8                                      }
+ 111   7                                      else
+ 112   7                                      {
+ 113   8                                          break;                          //·ñÔòÖ±½ÓÌø³öforÑ­»·
+ 114   8                                      }
+C51 COMPILER V9.60.0.0   MAIN                                                              01/15/2023 16:03:28 PAGE 3   
+
+ 115   7                                  }
+ 116   6      
+ 117   6                                  if(flag == 6)                           //flagµÈÓÚ6ËµÃ÷ÃÜÂëÕýÈ·
+ 118   6                                  {   
+ 119   7                                      Relay_Ctrl(GPIO_PIN_SET);           //¼ÌµçÆ÷´ò¿ª
+ 120   7                                      Led_Ctrl(LED[7], GPIO_PIN_SET);     //LED7¹Ø±Õ
+ 121   7                                      counter1 = 0;                       //counter1ÖØÐÂ³õÊ¼»¯Îª0
+ 122   7                                      ET1 = 1;                            //´ò¿ª¶¨Ê±Æ÷1ÖÐ¶Ï£¬¼ÆÊ±
+ 123   7                                      mode = Open_Mode;                   //Ä£Ê½ÇÐ»»ÎªOpen_Mode
+ 124   7                                      break;
+ 125   7                                  }
+ 126   6                                  else
+ 127   6                                  {
+ 128   7                                      ET0 = 1;                            //·ñÔòÃÜÂë´íÎó£¬´ò¿ª¶¨Ê±Æ÷0ÖÐ¶Ï
+ 129   7                                      Led_Ctrl(LED[1], GPIO_PIN_RESET);   //LED1ÁÁ
+ 130   7                                  }
+ 131   6                              }
+ 132   5                          }  
+ 133   4                      }
+ 134   3                      else if(key == s8)                                  //°´ÏÂs8£¬Çå³ý°´¼ü
+ 135   3                      { 
+ 136   4                          Led_Ctrl(LED[1], GPIO_PIN_SET);                 //¹Ø±ÕLED1
+ 137   4                          ET0 = 0;                                        //¹Ø±Õ¶¨Ê±Æ÷0
+ 138   4                          counter = 0;                                    //counterÖØÐÂ³õÊ¼»¯Îª0
+ 139   4                          if(password_flag != 0)                          //ÅÐ¶ÏÊÇ·ñÇå³ýÍêÊý×Ö
+ 140   4                          {
+ 141   5                              password_flag--;                            //ÈôÃ»Çå³ýÍê£¬password_flag¼õ1
+ 142   5                          }
+ 143   4                          else
+ 144   4                          {
+ 145   5                              Display(0, 0);                              //Çå³ýÍê£¬ÊýÂë¹ÜÈ«²¿¹Ø±Õ
+ 146   5                          }
+ 147   4                      }
+ 148   3                      
+ 149   3                      break;
+ 150   3      
+ 151   3                  case Open_Mode:                                         //ÃÜÂëÕýÈ·£¬ÏÔÊ¾OPENÄ£Ê½
+ 152   3                      
+ 153   3                      Display_Open();                                     //ÏÔÊ¾OPEN
+ 154   3      
+ 155   3                      if(key == s12)                                      //°´ÏÂs12
+ 156   3                      {   
+ 157   4                          ET1 = 0;                                        //¶¨Ê±Æ÷1ÖÐ¶Ï¹Ø±Õ
+ 158   4                          password_flag = 0;                              //password_flagÖØÐÂ³õÊ¼»¯Îª0
+ 159   4                          Relay_Ctrl(GPIO_PIN_RESET);                     //¼ÌµçÆ÷¹Ø±Õ
+ 160   4                          Led_Ctrl(LED[8], GPIO_PIN_RESET);               //LED8ÁÁ
+ 161   4                          mode = Revise_Mode;                             //Ä£Ê½ÇÐ»»ÎªRevise_Mode
+ 162   4                          break;
+ 163   4                      }
+ 164   3      
+ 165   3                      break;
+ 166   3      
+ 167   3                  case Revise_Mode:                                        //ÐÞ¸ÄÃÜÂëÄ£Ê½
+ 168   3                      
+ 169   3                      Display_Revise_Passward(password, password_flag);    //ÏÔÊ¾ÐÞ¸ÄµÄÃÜÂë
+ 170   3      
+ 171   3                      if(0 <= key && key <= 9)                             //ÅÐ¶Ï°´¼üÊÇ·ñ·µ»Ø0~9
+ 172   3                      {
+ 173   4                           if(password_flag != 6)                          //ÈôÊý×é¿ØÖÆ±äÁ¿password_flag²»µÈÓÚ6£
+             -¬ËµÃ÷ÐÞ¸ÄÃÜÂëÃ»ÓÐÊäÈëµ½×îºóÒ»¸ö
+ 174   4                          {
+ 175   5                              password_flag++;                             //password_flagÏÈ×ÔÔö1
+C51 COMPILER V9.60.0.0   MAIN                                                              01/15/2023 16:03:28 PAGE 4   
+
+ 176   5                              password[password_flag] = key;               //½«°´¼üËù·µ»ØµÄÖµ·Åµ½ÃÜÂëÊý×éÖÐ
+ 177   5                              EEPROM_Write(password_flag, password[password_flag]);   //½«ÃÜÂë´æ´¢µ½EEPROMÖÐ
+ 178   5                          }
+ 179   4                          else                                             //ÃÜÂëÊäÈëµ½×îºóÒ»¸ö
+ 180   4                          {
+ 181   5                              password[password_flag] = key;               //½«°´¼üËù·µ»ØµÄÖµ·Åµ½ÃÜÂëÊý×éÖÐ
+ 182   5                              EEPROM_Write(password_flag, password[password_flag]);   //½«ÃÜÂë´æ´¢µ½EEPROMÖÐ
+ 183   5                          }              
+ 184   4                      }  
+ 185   3                      else if(key == s8)                                   //°´ÏÂs8£¬Çå³ý°´¼ü
+ 186   3                      { 
+ 187   4                          if(password_flag != 0)                           //ÅÐ¶ÏÊÇ·ñÇå³ýÍêÊý×Ö
+ 188   4                          {
+ 189   5                              password_flag--;                             //ÈôÃ»Çå³ýÍê£¬password_flag¼õ1
+ 190   5                          }
+ 191   4                          else
+ 192   4                          {
+ 193   5                              Display(0, 0);                               //Çå³ýÍê£¬ÊýÂë¹ÜÈ«²¿¹Ø±Õ
+ 194   5                          }
+ 195   4                      }
+ 196   3                      else if (key == s12)                                 //°´ÏÂs12£¬·µ»ØClose_ModeÄ£Ê½
+ 197   3                      {
+ 198   4                          if(password_flag == 6)                           //ÅÐ¶ÏÐÞ¸ÄÃÜÂëÊÇ·ñÊäÈëÍê³É
+ 199   4                          {
+ 200   5                              mode = Close_Mode;                           //Ä£Ê½ÇÐ»»ÎªClose_Mode
+ 201   5                              Led_Ctrl(LED[8], GPIO_PIN_SET);              //LED8Ãð
+ 202   5                              break;      
+ 203   5                          }
+ 204   4                      }
+ 205   3      
+ 206   3                      break;
+ 207   3                  
+ 208   3                  default:
+ 209   3                      break;
+ 210   3              }
+ 211   2      
+ 212   2          }
+ 213   1      }
+C51 COMPILER V9.60.0.0   MAIN                                                              01/15/2023 16:03:28 PAGE 5   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION Timer0_IT (BEGIN)
+0000 C0E0              PUSH    ACC
+0002 C0F0              PUSH    B
+0004 C083              PUSH    DPH
+0006 C082              PUSH    DPL
+0008 C0D0              PUSH    PSW
+000A 75D000            MOV     PSW,#00H
+000D C000              PUSH    AR0
+000F C001              PUSH    AR1
+0011 C002              PUSH    AR2
+0013 C003              PUSH    AR3
+0015 C004              PUSH    AR4
+0017 C005              PUSH    AR5
+0019 C006              PUSH    AR6
+001B C007              PUSH    AR7
+                                           ; SOURCE LINE # 9
+                                           ; SOURCE LINE # 11
+001D 0500        R     INC     counter
+                                           ; SOURCE LINE # 12
+001F C3                CLR     C
+0020 E500        R     MOV     A,counter
+0022 9464              SUBB    A,#064H
+0024 7480              MOV     A,#080H
+0026 9480              SUBB    A,#080H
+0028 4013              JC      ?C0002
+                                           ; SOURCE LINE # 13
+                                           ; SOURCE LINE # 14
+002A C2A9              CLR     ET0
+                                           ; SOURCE LINE # 15
+002C 750000      R     MOV     counter,#00H
+                                           ; SOURCE LINE # 16
+002F 900000      E     MOV     DPTR,#LED+01H
+0032 E4                CLR     A
+0033 93                MOVC    A,@A+DPTR
+0034 FF                MOV     R7,A
+0035 7D01              MOV     R5,#01H
+0037 120000      E     LCALL   _Led_Ctrl
+                                           ; SOURCE LINE # 17
+003A 750001      R     MOV     mode,#01H
+                                           ; SOURCE LINE # 18
+                                           ; SOURCE LINE # 19
+003D         ?C0002:
+003D D007              POP     AR7
+003F D006              POP     AR6
+0041 D005              POP     AR5
+0043 D004              POP     AR4
+0045 D003              POP     AR3
+0047 D002              POP     AR2
+0049 D001              POP     AR1
+004B D000              POP     AR0
+004D D0D0              POP     PSW
+004F D082              POP     DPL
+0051 D083              POP     DPH
+0053 D0F0              POP     B
+0055 D0E0              POP     ACC
+0057 32                RETI    
+             ; FUNCTION Timer0_IT (END)
+
+             ; FUNCTION Timer1_IT (BEGIN)
+C51 COMPILER V9.60.0.0   MAIN                                                              01/15/2023 16:03:28 PAGE 6   
+
+0000 C0E0              PUSH    ACC
+0002 C0F0              PUSH    B
+0004 C083              PUSH    DPH
+0006 C082              PUSH    DPL
+0008 C0D0              PUSH    PSW
+000A 75D000            MOV     PSW,#00H
+000D C000              PUSH    AR0
+000F C001              PUSH    AR1
+0011 C002              PUSH    AR2
+0013 C003              PUSH    AR3
+0015 C004              PUSH    AR4
+0017 C005              PUSH    AR5
+0019 C006              PUSH    AR6
+001B C007              PUSH    AR7
+                                           ; SOURCE LINE # 21
+                                           ; SOURCE LINE # 23
+001D 0500        R     INC     counter1
+                                           ; SOURCE LINE # 24
+001F C3                CLR     C
+0020 E500        R     MOV     A,counter1
+0022 9464              SUBB    A,#064H
+0024 7480              MOV     A,#080H
+0026 9480              SUBB    A,#080H
+0028 400D              JC      ?C0004
+                                           ; SOURCE LINE # 25
+                                           ; SOURCE LINE # 26
+002A C2AB              CLR     ET1
+                                           ; SOURCE LINE # 27
+002C 750000      R     MOV     counter1,#00H
+                                           ; SOURCE LINE # 28
+002F E4                CLR     A
+0030 FF                MOV     R7,A
+0031 120000      E     LCALL   _Relay_Ctrl
+                                           ; SOURCE LINE # 29
+0034 750001      R     MOV     mode,#01H
+                                           ; SOURCE LINE # 30
+                                           ; SOURCE LINE # 31
+0037         ?C0004:
+0037 D007              POP     AR7
+0039 D006              POP     AR6
+003B D005              POP     AR5
+003D D004              POP     AR4
+003F D003              POP     AR3
+0041 D002              POP     AR2
+0043 D001              POP     AR1
+0045 D000              POP     AR0
+0047 D0D0              POP     PSW
+0049 D082              POP     DPL
+004B D083              POP     DPH
+004D D0F0              POP     B
+004F D0E0              POP     ACC
+0051 32                RETI    
+             ; FUNCTION Timer1_IT (END)
+
+             ; FUNCTION main (BEGIN)
+                                           ; SOURCE LINE # 33
+                                           ; SOURCE LINE # 34
+                                           ; SOURCE LINE # 35
+0000 750099      R     MOV     key,#099H
+                                           ; SOURCE LINE # 36
+0003 7800        R     MOV     R0,#LOW password
+0005 7C00        R     MOV     R4,#HIGH password
+C51 COMPILER V9.60.0.0   MAIN                                                              01/15/2023 16:03:28 PAGE 7   
+
+0007 7D00              MOV     R5,#00H
+0009 7BFF              MOV     R3,#0FFH
+000B 7A00        R     MOV     R2,#HIGH _?ix1000
+000D 7900        R     MOV     R1,#LOW _?ix1000
+000F 7E00              MOV     R6,#00H
+0011 7F07              MOV     R7,#07H
+0013 120000      E     LCALL   ?C?COPY
+                                           ; SOURCE LINE # 37
+0016 7800        R     MOV     R0,#LOW input_password
+0018 7C00        R     MOV     R4,#HIGH input_password
+001A 7D00              MOV     R5,#00H
+001C 7BFF              MOV     R3,#0FFH
+001E 7A00        R     MOV     R2,#HIGH _?ix1001
+0020 7900        R     MOV     R1,#LOW _?ix1001
+0022 7E00              MOV     R6,#00H
+0024 7F07              MOV     R7,#07H
+0026 120000      E     LCALL   ?C?COPY
+                                           ; SOURCE LINE # 38
+0029 E4                CLR     A
+002A F500        R     MOV     password_flag,A
+                                           ; SOURCE LINE # 40
+002C 120000      E     LCALL   Close
+                                           ; SOURCE LINE # 41
+002F 900000      E     MOV     DPTR,#LED
+0032 E4                CLR     A
+0033 93                MOVC    A,@A+DPTR
+0034 FF                MOV     R7,A
+0035 7D01              MOV     R5,#01H
+0037 120000      E     LCALL   _Led_Ctrl
+                                           ; SOURCE LINE # 42
+003A 120000      E     LCALL   Timer0Init
+                                           ; SOURCE LINE # 43
+003D 120000      E     LCALL   Timer1Init
+                                           ; SOURCE LINE # 44
+0040 D2AF              SETB    EA
+                                           ; SOURCE LINE # 45
+0042 C2A9              CLR     ET0
+                                           ; SOURCE LINE # 46
+0044 C2AB              CLR     ET1
+                                           ; SOURCE LINE # 48
+0046 E4                CLR     A
+0047 FF                MOV     R7,A
+0048 120000      E     LCALL   _EEPROM_Read
+004B EF                MOV     A,R7
+004C 647D              XRL     A,#07DH
+004E 6031              JZ      ?C0005
+                                           ; SOURCE LINE # 49
+                                           ; SOURCE LINE # 50
+0050 7D7D              MOV     R5,#07DH
+0052 E4                CLR     A
+0053 FF                MOV     R7,A
+0054 120000      E     LCALL   _EEPROM_Write
+                                           ; SOURCE LINE # 51
+0057 AD00        R     MOV     R5,password+01H
+0059 7F01              MOV     R7,#01H
+005B 120000      E     LCALL   _EEPROM_Write
+                                           ; SOURCE LINE # 52
+005E AD00        R     MOV     R5,password+02H
+0060 7F02              MOV     R7,#02H
+0062 120000      E     LCALL   _EEPROM_Write
+                                           ; SOURCE LINE # 53
+0065 AD00        R     MOV     R5,password+03H
+C51 COMPILER V9.60.0.0   MAIN                                                              01/15/2023 16:03:28 PAGE 8   
+
+0067 7F03              MOV     R7,#03H
+0069 120000      E     LCALL   _EEPROM_Write
+                                           ; SOURCE LINE # 54
+006C AD00        R     MOV     R5,password+04H
+006E 7F04              MOV     R7,#04H
+0070 120000      E     LCALL   _EEPROM_Write
+                                           ; SOURCE LINE # 55
+0073 AD00        R     MOV     R5,password+05H
+0075 7F05              MOV     R7,#05H
+0077 120000      E     LCALL   _EEPROM_Write
+                                           ; SOURCE LINE # 56
+007A AD00        R     MOV     R5,password+06H
+007C 7F06              MOV     R7,#06H
+                                           ; SOURCE LINE # 57
+007E 020000      R     LJMP    ?C0044
+0081         ?C0005:
+                                           ; SOURCE LINE # 59
+                                           ; SOURCE LINE # 60
+0081 7F01              MOV     R7,#01H
+0083 120000      E     LCALL   _EEPROM_Read
+0086 8F00        R     MOV     password+01H,R7
+                                           ; SOURCE LINE # 61
+0088 7F02              MOV     R7,#02H
+008A 120000      E     LCALL   _EEPROM_Read
+008D 8F00        R     MOV     password+02H,R7
+                                           ; SOURCE LINE # 62
+008F 7F03              MOV     R7,#03H
+0091 120000      E     LCALL   _EEPROM_Read
+0094 8F00        R     MOV     password+03H,R7
+                                           ; SOURCE LINE # 63
+0096 7F04              MOV     R7,#04H
+0098 120000      E     LCALL   _EEPROM_Read
+009B 8F00        R     MOV     password+04H,R7
+                                           ; SOURCE LINE # 64
+009D 7F05              MOV     R7,#05H
+009F 120000      E     LCALL   _EEPROM_Read
+00A2 8F00        R     MOV     password+05H,R7
+                                           ; SOURCE LINE # 65
+00A4 7F06              MOV     R7,#06H
+00A6 120000      E     LCALL   _EEPROM_Read
+00A9 8F00        R     MOV     password+06H,R7
+                                           ; SOURCE LINE # 66
+00AB         ?C0007:
+                                           ; SOURCE LINE # 68
+                                           ; SOURCE LINE # 69
+                                           ; SOURCE LINE # 70
+00AB 120000      E     LCALL   Key_Map
+00AE 8F00        R     MOV     key,R7
+                                           ; SOURCE LINE # 72
+00B0 E500        R     MOV     A,mode
+00B2 24FE              ADD     A,#0FEH
+00B4 602F              JZ      ?C0012
+00B6 14                DEC     A
+00B7 7003              JNZ     $ + 5H
+00B9 020000      R     LJMP    ?C0027
+00BC 14                DEC     A
+00BD 7003              JNZ     $ + 5H
+00BF 020000      R     LJMP    ?C0029
+00C2 2403              ADD     A,#03H
+00C4 70E5              JNZ     ?C0007
+                                           ; SOURCE LINE # 73
+                                           ; SOURCE LINE # 74
+C51 COMPILER V9.60.0.0   MAIN                                                              01/15/2023 16:03:28 PAGE 9   
+
+00C6         ?C0010:
+                                           ; SOURCE LINE # 76
+00C6 E5A0              MOV     A,P2
+00C8 541F              ANL     A,#01FH
+00CA 44C0              ORL     A,#0C0H
+00CC F5A0              MOV     P2,A
+                                           ; SOURCE LINE # 77
+00CE E4                CLR     A
+00CF F580              MOV     P0,A
+                                           ; SOURCE LINE # 78
+00D1 53A01F            ANL     P2,#01FH
+                                           ; SOURCE LINE # 80
+00D4 E500        R     MOV     A,key
+00D6 6441              XRL     A,#041H
+00D8 70D1              JNZ     ?C0007
+                                           ; SOURCE LINE # 81
+                                           ; SOURCE LINE # 82
+00DA 750002      R     MOV     mode,#02H
+                                           ; SOURCE LINE # 83
+00DD F500        R     MOV     password_flag,A
+                                           ; SOURCE LINE # 84
+00DF 900000      E     MOV     DPTR,#LED+07H
+                                           ; SOURCE LINE # 85
+                                           ; SOURCE LINE # 87
+00E2 020000      R     LJMP    ?C0045
+                                           ; SOURCE LINE # 89
+00E5         ?C0012:
+                                           ; SOURCE LINE # 91
+00E5 7B00              MOV     R3,#00H
+00E7 7A00        R     MOV     R2,#HIGH input_password
+00E9 7900        R     MOV     R1,#LOW input_password
+00EB AD00        R     MOV     R5,password_flag
+00ED 120000      E     LCALL   _Display_Passward
+                                           ; SOURCE LINE # 93
+00F0 AF00        R     MOV     R7,key
+00F2 7E00              MOV     R6,#00H
+00F4 D3                SETB    C
+00F5 E4                CLR     A
+00F6 9F                SUBB    A,R7
+00F7 7480              MOV     A,#080H
+00F9 F8                MOV     R0,A
+00FA 98                SUBB    A,R0
+00FB 507B              JNC     ?C0013
+00FD EF                MOV     A,R7
+00FE 9409              SUBB    A,#09H
+0100 7480              MOV     A,#080H
+0102 9480              SUBB    A,#080H
+0104 5072              JNC     ?C0013
+                                           ; SOURCE LINE # 94
+                                           ; SOURCE LINE # 95
+0106 E500        R     MOV     A,password_flag
+0108 6406              XRL     A,#06H
+010A 609F              JZ      ?C0007
+                                           ; SOURCE LINE # 96
+                                           ; SOURCE LINE # 97
+010C 0500        R     INC     password_flag
+                                           ; SOURCE LINE # 98
+010E 7400        R     MOV     A,#LOW input_password
+0110 2500        R     ADD     A,password_flag
+0112 F8                MOV     R0,A
+0113 A600        R     MOV     @R0,key
+                                           ; SOURCE LINE # 100
+C51 COMPILER V9.60.0.0   MAIN                                                              01/15/2023 16:03:28 PAGE 10  
+
+0115 E500        R     MOV     A,password_flag
+0117 6406              XRL     A,#06H
+0119 7090              JNZ     ?C0007
+                                           ; SOURCE LINE # 101
+                                           ; SOURCE LINE # 102
+011B F500        R     MOV     i,A
+011D 750001      R     MOV     i+01H,#01H
+                                           ; SOURCE LINE # 103
+0120 F500        R     MOV     flag,A
+                                           ; SOURCE LINE # 105
+0122 F500        R     MOV     i,A
+0124 750001      R     MOV     i+01H,#01H
+0127         ?C0016:
+                                           ; SOURCE LINE # 106
+                                           ; SOURCE LINE # 107
+0127 AF00        R     MOV     R7,i+01H
+0129 7400        R     MOV     A,#LOW password
+012B 2F                ADD     A,R7
+012C F8                MOV     R0,A
+012D E6                MOV     A,@R0
+012E FE                MOV     R6,A
+012F 7400        R     MOV     A,#LOW input_password
+0131 2F                ADD     A,R7
+0132 F8                MOV     R0,A
+0133 E6                MOV     A,@R0
+0134 B50610            CJNE    A,AR6,?C0017
+                                           ; SOURCE LINE # 108
+                                           ; SOURCE LINE # 109
+0137 0500        R     INC     flag
+                                           ; SOURCE LINE # 110
+                                           ; SOURCE LINE # 112
+                                           ; SOURCE LINE # 113
+                                           ; SOURCE LINE # 114
+                                           ; SOURCE LINE # 115
+0139 0500        R     INC     i+01H
+013B E500        R     MOV     A,i+01H
+013D 7002              JNZ     ?C0042
+013F 0500        R     INC     i
+0141         ?C0042:
+0141 6407              XRL     A,#07H
+0143 4500        R     ORL     A,i
+0145 70E0              JNZ     ?C0016
+0147         ?C0017:
+                                           ; SOURCE LINE # 117
+0147 E500        R     MOV     A,flag
+0149 6406              XRL     A,#06H
+014B 701B              JNZ     ?C0021
+                                           ; SOURCE LINE # 118
+                                           ; SOURCE LINE # 119
+014D 7F01              MOV     R7,#01H
+014F 120000      E     LCALL   _Relay_Ctrl
+                                           ; SOURCE LINE # 120
+0152 900000      E     MOV     DPTR,#LED+07H
+0155 E4                CLR     A
+0156 93                MOVC    A,@A+DPTR
+0157 FF                MOV     R7,A
+0158 7D01              MOV     R5,#01H
+015A 120000      E     LCALL   _Led_Ctrl
+                                           ; SOURCE LINE # 121
+015D E4                CLR     A
+015E F500        R     MOV     counter1,A
+                                           ; SOURCE LINE # 122
+C51 COMPILER V9.60.0.0   MAIN                                                              01/15/2023 16:03:28 PAGE 11  
+
+0160 D2AB              SETB    ET1
+                                           ; SOURCE LINE # 123
+0162 750003      R     MOV     mode,#03H
+                                           ; SOURCE LINE # 124
+0165 020000      R     LJMP    ?C0007
+                                           ; SOURCE LINE # 125
+0168         ?C0021:
+                                           ; SOURCE LINE # 127
+                                           ; SOURCE LINE # 128
+0168 D2A9              SETB    ET0
+                                           ; SOURCE LINE # 129
+016A 900000      E     MOV     DPTR,#LED+01H
+016D E4                CLR     A
+016E         ?C0045:
+016E 93                MOVC    A,@A+DPTR
+016F FF                MOV     R7,A
+0170 E4                CLR     A
+0171 FD                MOV     R5,A
+0172 120000      E     LCALL   _Led_Ctrl
+                                           ; SOURCE LINE # 130
+                                           ; SOURCE LINE # 131
+                                           ; SOURCE LINE # 132
+                                           ; SOURCE LINE # 133
+0175 020000      R     LJMP    ?C0007
+0178         ?C0013:
+                                           ; SOURCE LINE # 134
+0178 E500        R     MOV     A,key
+017A 6421              XRL     A,#021H
+017C 6003              JZ      $ + 5H
+017E 020000      R     LJMP    ?C0007
+                                           ; SOURCE LINE # 135
+                                           ; SOURCE LINE # 136
+0181 900000      E     MOV     DPTR,#LED+01H
+0184 93                MOVC    A,@A+DPTR
+0185 FF                MOV     R7,A
+0186 7D01              MOV     R5,#01H
+0188 120000      E     LCALL   _Led_Ctrl
+                                           ; SOURCE LINE # 137
+018B C2A9              CLR     ET0
+                                           ; SOURCE LINE # 138
+018D E4                CLR     A
+018E F500        R     MOV     counter,A
+                                           ; SOURCE LINE # 139
+0190 E500        R     MOV     A,password_flag
+0192 607A              JZ      ?C0046
+                                           ; SOURCE LINE # 140
+                                           ; SOURCE LINE # 141
+0194 1500        R     DEC     password_flag
+                                           ; SOURCE LINE # 142
+0196 020000      R     LJMP    ?C0007
+                                           ; SOURCE LINE # 151
+0199         ?C0027:
+                                           ; SOURCE LINE # 153
+0199 120000      E     LCALL   Display_Open
+                                           ; SOURCE LINE # 155
+019C E500        R     MOV     A,key
+019E 6431              XRL     A,#031H
+01A0 6003              JZ      $ + 5H
+01A2 020000      R     LJMP    ?C0007
+                                           ; SOURCE LINE # 156
+                                           ; SOURCE LINE # 157
+01A5 C2AB              CLR     ET1
+C51 COMPILER V9.60.0.0   MAIN                                                              01/15/2023 16:03:28 PAGE 12  
+
+                                           ; SOURCE LINE # 158
+01A7 F500        R     MOV     password_flag,A
+                                           ; SOURCE LINE # 159
+01A9 FF                MOV     R7,A
+01AA 120000      E     LCALL   _Relay_Ctrl
+                                           ; SOURCE LINE # 160
+01AD 900000      E     MOV     DPTR,#LED+08H
+01B0 E4                CLR     A
+01B1 93                MOVC    A,@A+DPTR
+01B2 FF                MOV     R7,A
+01B3 E4                CLR     A
+01B4 FD                MOV     R5,A
+01B5 120000      E     LCALL   _Led_Ctrl
+                                           ; SOURCE LINE # 161
+01B8 750004      R     MOV     mode,#04H
+                                           ; SOURCE LINE # 162
+01BB 020000      R     LJMP    ?C0007
+                                           ; SOURCE LINE # 163
+                                           ; SOURCE LINE # 165
+                                           ; SOURCE LINE # 167
+01BE         ?C0029:
+                                           ; SOURCE LINE # 169
+01BE 7B00              MOV     R3,#00H
+01C0 7A00        R     MOV     R2,#HIGH password
+01C2 7900        R     MOV     R1,#LOW password
+01C4 AD00        R     MOV     R5,password_flag
+01C6 120000      E     LCALL   _Display_Revise_Passward
+                                           ; SOURCE LINE # 171
+01C9 AF00        R     MOV     R7,key
+01CB 7E00              MOV     R6,#00H
+01CD D3                SETB    C
+01CE E4                CLR     A
+01CF 9F                SUBB    A,R7
+01D0 7480              MOV     A,#080H
+01D2 F8                MOV     R0,A
+01D3 98                SUBB    A,R0
+01D4 5029              JNC     ?C0030
+01D6 EF                MOV     A,R7
+01D7 9409              SUBB    A,#09H
+01D9 7480              MOV     A,#080H
+01DB 9480              SUBB    A,#080H
+01DD 5020              JNC     ?C0030
+                                           ; SOURCE LINE # 172
+                                           ; SOURCE LINE # 173
+01DF E500        R     MOV     A,password_flag
+01E1 6406              XRL     A,#06H
+01E3 6004              JZ      ?C0031
+                                           ; SOURCE LINE # 174
+                                           ; SOURCE LINE # 175
+01E5 0500        R     INC     password_flag
+                                           ; SOURCE LINE # 176
+                                           ; SOURCE LINE # 177
+                                           ; SOURCE LINE # 178
+01E7 8000              SJMP    ?C0043
+01E9         ?C0031:
+                                           ; SOURCE LINE # 180
+                                           ; SOURCE LINE # 181
+01E9         ?C0043:
+01E9 7400        R     MOV     A,#LOW password
+01EB 2500        R     ADD     A,password_flag
+01ED F8                MOV     R0,A
+01EE A600        R     MOV     @R0,key
+C51 COMPILER V9.60.0.0   MAIN                                                              01/15/2023 16:03:28 PAGE 13  
+
+                                           ; SOURCE LINE # 182
+01F0 7400        R     MOV     A,#LOW password
+01F2 2500        R     ADD     A,password_flag
+01F4 F8                MOV     R0,A
+01F5 E6                MOV     A,@R0
+01F6 FD                MOV     R5,A
+01F7 AF00        R     MOV     R7,password_flag
+01F9         ?C0044:
+01F9 120000      E     LCALL   _EEPROM_Write
+                                           ; SOURCE LINE # 183
+                                           ; SOURCE LINE # 184
+01FC 020000      R     LJMP    ?C0007
+01FF         ?C0030:
+                                           ; SOURCE LINE # 185
+01FF E500        R     MOV     A,key
+0201 6421              XRL     A,#021H
+0203 7012              JNZ     ?C0034
+                                           ; SOURCE LINE # 186
+                                           ; SOURCE LINE # 187
+0205 E500        R     MOV     A,password_flag
+0207 6005              JZ      ?C0035
+                                           ; SOURCE LINE # 188
+                                           ; SOURCE LINE # 189
+0209 1500        R     DEC     password_flag
+                                           ; SOURCE LINE # 190
+020B 020000      R     LJMP    ?C0007
+020E         ?C0035:
+                                           ; SOURCE LINE # 192
+                                           ; SOURCE LINE # 193
+020E         ?C0046:
+020E E4                CLR     A
+020F FD                MOV     R5,A
+0210 FF                MOV     R7,A
+0211 120000      E     LCALL   _Display
+                                           ; SOURCE LINE # 194
+                                           ; SOURCE LINE # 195
+0214 020000      R     LJMP    ?C0007
+0217         ?C0034:
+                                           ; SOURCE LINE # 196
+0217 E500        R     MOV     A,key
+0219 6431              XRL     A,#031H
+021B 6003              JZ      $ + 5H
+021D 020000      R     LJMP    ?C0007
+                                           ; SOURCE LINE # 197
+                                           ; SOURCE LINE # 198
+0220 E500        R     MOV     A,password_flag
+0222 6406              XRL     A,#06H
+0224 6003              JZ      $ + 5H
+0226 020000      R     LJMP    ?C0007
+                                           ; SOURCE LINE # 199
+                                           ; SOURCE LINE # 200
+0229 750001      R     MOV     mode,#01H
+                                           ; SOURCE LINE # 201
+022C 900000      E     MOV     DPTR,#LED+08H
+022F 93                MOVC    A,@A+DPTR
+0230 FF                MOV     R7,A
+0231 7D01              MOV     R5,#01H
+0233 120000      E     LCALL   _Led_Ctrl
+                                           ; SOURCE LINE # 202
+0236 020000      R     LJMP    ?C0007
+             ; FUNCTION main (END)
+
+C51 COMPILER V9.60.0.0   MAIN                                                              01/15/2023 16:03:28 PAGE 14  
+
+NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
+====                                    =====   ======  ====    ======  ====
+
+
+CCF2 . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00DAH  1
+P1M0 . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0092H  1
+P0M1 . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0093H  1
+P2M0 . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0096H  1
+P1M1 . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0091H  1
+P0 . . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0080H  1
+P3M0 . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00B2H  1
+P2M1 . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0095H  1
+P1 . . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0090H  1
+P4M0 . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00B4H  1
+P3M1 . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00B1H  1
+P2 . . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00A0H  1
+WKTCH. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00ABH  1
+P5M0 . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00CAH  1
+P4M1 . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00B3H  1
+P3 . . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00B0H  1
+P6M0 . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00CCH  1
+P5M1 . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00C9H  1
+P4 . . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00C0H  1
+AC . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00D6H  1
+counter. . . . . . . . . . . . . . . .  PUBLIC   DATA   U_CHAR   0000H  1
+PWMIF. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00F6H  1
+P7M0 . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00E2H  1
+P6M1 . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00CBH  1
+P5 . . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00C8H  1
+_Display_Passward. . . . . . . . . . .  EXTERN   CODE   PROC     -----  -----
+EA . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00AFH  1
+P7M1 . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00E1H  1
+P6 . . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00E8H  1
+WKTCL. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00AAH  1
+P7 . . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00F8H  1
+SPCTL. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00CEH  1
+CF . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00DFH  1
+PWMCR. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00F5H  1
+CH . . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00F9H  1
+P_SW1. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00A2H  1
+P_SW2. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00BAH  1
+_Led_Ctrl. . . . . . . . . . . . . . .  EXTERN   CODE   PROC     -----  -----
+EADC . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00ADH  1
+IE . . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00A8H  1
+CL . . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00E9H  1
+IAP_CMD. . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00C5H  1
+CCAP0H . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00FAH  1
+CCAP1H . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00FBH  1
+CCAP2H . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00FCH  1
+ADC_RES. . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00BDH  1
+CCAP0L . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00EAH  1
+CR . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00DEH  1
+PWMFDCR. . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00F7H  1
+CCAP1L . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00EBH  1
+CCAPM0 . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00DAH  1
+CCAP2L . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00ECH  1
+CCAPM1 . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00DBH  1
+CCAPM2 . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00DCH  1
+ES . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00ACH  1
+PADC . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00BDH  1
+IP . . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00B8H  1
+C51 COMPILER V9.60.0.0   MAIN                                                              01/15/2023 16:03:28 PAGE 15  
+
+NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
+====                                    =====   ======  ====    ======  ====
+
+
+RI . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0098H  1
+CY . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00D7H  1
+TI . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0099H  1
+CLK_DIV. . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0097H  1
+IAP_ADDRH. . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00C3H  1
+PS . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00BCH  1
+SP . . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0081H  1
+CMOD . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00D9H  1
+CCON . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00D8H  1
+IAP_ADDRL. . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00C4H  1
+PPCA . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00BFH  1
+OV . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00D2H  1
+main . . . . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+  i. . . . . . . . . . . . . . . . . .  AUTO     DATA   INT      0010H  2
+  flag . . . . . . . . . . . . . . . .  AUTO     DATA   U_CHAR   0012H  1
+  key. . . . . . . . . . . . . . . . .  AUTO     DATA   U_CHAR   0000H  1
+  password . . . . . . . . . . . . . .  AUTO     DATA   ARRAY    0001H  7
+  input_password . . . . . . . . . . .  AUTO     DATA   ARRAY    0008H  7
+  password_flag. . . . . . . . . . . .  AUTO     DATA   U_CHAR   000FH  1
+mode . . . . . . . . . . . . . . . . .  PUBLIC   DATA   U_CHAR   0001H  1
+CMPCR1 . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00E6H  1
+_EEPROM_Read . . . . . . . . . . . . .  EXTERN   CODE   PROC     -----  -----
+CMPCR2 . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00E7H  1
+Key_Map. . . . . . . . . . . . . . . .  EXTERN   CODE   PROC     -----  -----
+ELVD . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00AEH  1
+P00. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0080H  1
+ADC_CONTR. . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00BCH  1
+SBUF . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0099H  1
+PCON . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0087H  1
+P10. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0090H  1
+P01. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0081H  1
+Timer0_IT. . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+P20. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00A0H  1
+P11. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0091H  1
+P02. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0082H  1
+Timer1_IT. . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+P30. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00B0H  1
+P21. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00A1H  1
+P12. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0092H  1
+P03. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0083H  1
+SCON . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0098H  1
+P40. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00C0H  1
+P31. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00B1H  1
+P22. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00A2H  1
+P13. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0093H  1
+P04. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0084H  1
+TMOD . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0089H  1
+TCON . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0088H  1
+P50. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00C8H  1
+P41. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00C1H  1
+P32. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00B2H  1
+P23. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00A3H  1
+P14. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0094H  1
+P05. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0085H  1
+counter1 . . . . . . . . . . . . . . .  PUBLIC   DATA   U_CHAR   0002H  1
+P60. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00E8H  1
+P51. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00C9H  1
+C51 COMPILER V9.60.0.0   MAIN                                                              01/15/2023 16:03:28 PAGE 16  
+
+NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
+====                                    =====   ======  ====    ======  ====
+
+
+P42. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00C2H  1
+P33. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00B3H  1
+P24. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00A4H  1
+P15. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0095H  1
+P06. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0086H  1
+PLVD . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00BEH  1
+P70. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00F8H  1
+P61. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00E9H  1
+P52. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00CAH  1
+P43. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00C3H  1
+P34. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00B4H  1
+P25. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00A5H  1
+P16. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0096H  1
+P07. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0087H  1
+P71. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00F9H  1
+P62. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00EAH  1
+P53. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00CBH  1
+P44. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00C4H  1
+P35. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00B5H  1
+P26. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00A6H  1
+P17. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0097H  1
+_EEPROM_Write. . . . . . . . . . . . .  EXTERN   CODE   PROC     -----  -----
+P72. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00FAH  1
+P63. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00EBH  1
+P54. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00CCH  1
+P45. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00C5H  1
+P36. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00B6H  1
+P27. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00A7H  1
+P73. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00FBH  1
+P64. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00ECH  1
+P55. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00CDH  1
+P46. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00C6H  1
+P37. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00B7H  1
+P74. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00FCH  1
+P65. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00EDH  1
+P56. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00CEH  1
+P47. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00C7H  1
+P75. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00FDH  1
+P66. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00EEH  1
+P57. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00CFH  1
+P76. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00FEH  1
+P67. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00EFH  1
+IE0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0089H  1
+BUS_SPEED. . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00A1H  1
+P77. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00FFH  1
+IE1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      008BH  1
+IE2. . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00AFH  1
+AUXR . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   008EH  1
+B. . . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00F0H  1
+_?ix1000 . . . . . . . . . . . . . . .  STATIC   CODE   ARRAY    0000H  7
+IAP_CONTR. . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00C7H  1
+_?ix1001 . . . . . . . . . . . . . . .  STATIC   CODE   ARRAY    0007H  7
+PWMCFG . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00F1H  1
+ACC. . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00E0H  1
+ET0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00A9H  1
+TF0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      008DH  1
+ET1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00ABH  1
+C51 COMPILER V9.60.0.0   MAIN                                                              01/15/2023 16:03:28 PAGE 17  
+
+NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
+====                                    =====   ======  ====    ======  ====
+
+
+Timer0Init . . . . . . . . . . . . . .  EXTERN   CODE   PROC     -----  -----
+TF1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      008FH  1
+IP2. . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00B5H  1
+Timer1Init . . . . . . . . . . . . . .  EXTERN   CODE   PROC     -----  -----
+RB8. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      009AH  1
+TH0. . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   008CH  1
+TH1. . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   008DH  1
+IT0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0088H  1
+EX0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00A8H  1
+TB8. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      009BH  1
+T2H. . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00D6H  1
+IT1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      008AH  1
+EX1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00AAH  1
+Display_Open . . . . . . . . . . . . .  EXTERN   CODE   PROC     -----  -----
+T3H. . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00D4H  1
+P. . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00D0H  1
+SM0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      009FH  1
+T4H. . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00D2H  1
+TL0. . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   008AH  1
+SM1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      009EH  1
+TL1. . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   008BH  1
+SM2. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      009DH  1
+T2L. . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00D7H  1
+T3L. . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00D5H  1
+T4L. . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00D3H  1
+PT0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00B9H  1
+LED. . . . . . . . . . . . . . . . . .  EXTERN   CODE   ARRAY    -----  9
+PT1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00BBH  1
+RS0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00D3H  1
+IAP_DATA . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00C2H  1
+TR0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      008CH  1
+RS1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00D4H  1
+TR1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      008EH  1
+_Display_Revise_Passward . . . . . . .  EXTERN   CODE   PROC     -----  -----
+WDT_CONTR. . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00C1H  1
+PX0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00B8H  1
+PX1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00BAH  1
+_Display . . . . . . . . . . . . . . .  EXTERN   CODE   PROC     -----  -----
+PCA_PWM0 . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00F2H  1
+PCA_PWM1 . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00F3H  1
+PCA_PWM2 . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00F4H  1
+P1ASF. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   009DH  1
+DPH. . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0083H  1
+T3T4M. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00D1H  1
+T4T3M. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00D1H  1
+ADC_RESL . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00BEH  1
+DPL. . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0082H  1
+SPSTAT . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00CDH  1
+S2BUF. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   009BH  1
+S3BUF. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00ADH  1
+S4BUF. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0085H  1
+REN. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      009CH  1
+S2CON. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   009AH  1
+S3CON. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00ACH  1
+S4CON. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0084H  1
+SADEN. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00B9H  1
+SADDR. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00A9H  1
+C51 COMPILER V9.60.0.0   MAIN                                                              01/15/2023 16:03:28 PAGE 18  
+
+NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
+====                                    =====   ======  ====    ======  ====
+
+
+IAP_TRIG . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00C6H  1
+AUXR1. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00A2H  1
+F0 . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00D5H  1
+INT_CLKO . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   008FH  1
+F1 . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00D1H  1
+_Relay_Ctrl. . . . . . . . . . . . . .  EXTERN   CODE   PROC     -----  -----
+Close. . . . . . . . . . . . . . . . .  EXTERN   CODE   PROC     -----  -----
+PSW. . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00D0H  1
+CCF0 . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00D8H  1
+CCF1 . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00D9H  1
+SPDAT. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00CFH  1
+P0M0 . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0094H  1
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    745    ----
+   CONSTANT SIZE    =     14    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      3      19
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

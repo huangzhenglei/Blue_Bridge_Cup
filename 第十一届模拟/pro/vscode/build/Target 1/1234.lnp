@@ -1,0 +1,2 @@
+".\build\Target 1\__\__\scr\function.o",".\build\Target 1\__\__\scr\iic.o",".\build\Target 1\__\__\scr\main.o",".\build\Target 1\__\keil\STARTUP.o" TO ".\build\Target 1\1234"
+PRINT(".\build\Target 1\1234.map") REMOVEUNUSED
