@@ -1,0 +1,157 @@
+C51 COMPILER V9.60.0.0   MAIN                                                              02/09/2023 14:36:44 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN ..\..\out\main.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\..\scr\main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Lis
+                    -tings\main.lst) OBJECT(..\..\out\main.obj)
+
+line level    source
+
+   1          #include <STC15F2K60S2.H>
+   2          #include <intrins.h>
+   3          #include "function.h"
+   4          #include "ds1302.h"
+   5          #include "iic.h"
+   6          
+   7          void main()
+   8          {
+   9   1              u8 key = No_Press;
+  10   1              u8 mode = Automatic;
+  11   1              float humidity = 0;
+  12   1              u8 threshold = 50;
+  13   1              u8 buzz_flag = 1;
+  14   1      
+  15   1              Led_Ctrl(LED[1], GPIO_Pin_Reset);
+  16   1              Buzz_Ctrl(GPIO_Pin_Reset);
+  17   1              Relay_Ctrl(GPIO_Pin_Reset);
+  18   1              DS1302_Write(0, 30, 8);
+  19   1      
+  20   1              PCF8591_ADC_Init(0x03);
+  21   1      
+  22   1          while (1)
+  23   1          {
+  24   2                      DS1302_Read(); 
+  25   2                      humidity = (float)PCF8591_ADC_Get() / 255 * 99;
+  26   2                      key = Key_Val();
+  27   2      
+  28   2                      switch(mode)
+  29   2                      {
+  30   3                              case Automatic:
+  31   3      
+  32   3                                      Display_Time();
+  33   3                                      Display_Humidity(humidity);
+  34   3      
+  35   3                                      if(humidity < threshold)
+  36   3                                      {
+  37   4                                              Relay_Ctrl(GPIO_Pin_Set);
+  38   4                                      }
+  39   3                                      else
+  40   3                                      {
+  41   4                                              Relay_Ctrl(GPIO_Pin_Reset);
+  42   4                                      }
+  43   3      
+  44   3                                      if(key == s7)
+  45   3                                      {
+  46   4                                              mode = Manual;
+  47   4                                              Led_Ctrl(LED[1], GPIO_Pin_Set);
+  48   4                                              Led_Ctrl(LED[2], GPIO_Pin_Reset);
+  49   4                                              Relay_Ctrl(GPIO_Pin_Reset);
+  50   4                                              buzz_flag = 1;
+  51   4                                      }
+  52   3                                      else if(key == s6)
+  53   3                                      {
+  54   4                                              mode = HumidityAdjust;
+C51 COMPILER V9.60.0.0   MAIN                                                              02/09/2023 14:36:44 PAGE 2   
+
+  55   4                                              Relay_Ctrl(GPIO_Pin_Reset);
+  56   4                                      }
+  57   3      
+  58   3                                      break;
+  59   3      
+  60   3                              case Manual:
+  61   3      
+  62   3                                      Display_Time();
+  63   3                                      Display_Humidity(humidity);
+  64   3      
+  65   3                                      if(buzz_flag)
+  66   3                                      {
+  67   4                                              if(humidity < threshold)
+  68   4                                              {
+  69   5                                                      Buzz_Ctrl(GPIO_Pin_Set);
+  70   5                                              }
+  71   4                                              else
+  72   4                                              {
+  73   5                                                      Buzz_Ctrl(GPIO_Pin_Reset);
+  74   5                                              }
+  75   4                                      }
+  76   3      
+  77   3                                      if(key == s6)
+  78   3                                      {
+  79   4                                              buzz_flag = !buzz_flag;
+  80   4                                      }
+  81   3                                      else if(key == s5)
+  82   3                                      {
+  83   4                                              Relay_Ctrl(GPIO_Pin_Set);
+  84   4                                      }
+  85   3                                      else if(key == s4)
+  86   3                                      {
+  87   4                                              Relay_Ctrl(GPIO_Pin_Reset);
+  88   4                                      }
+  89   3                                      else if(key == s7)
+  90   3                                      {
+  91   4                                              mode = Automatic;
+  92   4                                              Buzz_Ctrl(GPIO_Pin_Reset);
+  93   4                                              Led_Ctrl(LED[1], GPIO_Pin_Reset);
+  94   4                                              Led_Ctrl(LED[2], GPIO_Pin_Set);                                 
+  95   4                                      }
+  96   3      
+  97   3                                      break;
+  98   3      
+  99   3                              case HumidityAdjust:
+ 100   3                                      Display_Threshold(threshold);
+ 101   3      
+ 102   3                                      if(key == s5)
+ 103   3                                      {
+ 104   4                                              if(threshold != 99)
+ 105   4                                                      threshold++;
+ 106   4                                              else
+ 107   4                                                      ;
+ 108   4                                      }
+ 109   3                                      else if (key == s4)
+ 110   3                                      {
+ 111   4                                              if(threshold != 0)
+ 112   4                                                      threshold--;
+ 113   4                                              else
+ 114   4                                                      ;
+ 115   4                                      }
+ 116   3                                      else if(key == s6)
+C51 COMPILER V9.60.0.0   MAIN                                                              02/09/2023 14:36:44 PAGE 3   
+
+ 117   3                                      {
+ 118   4                                              mode = Automatic;
+ 119   4                                              EEPROM_Write(0, threshold);
+ 120   4                                      }
+ 121   3      
+ 122   3                                      break;
+ 123   3      
+ 124   3                              default:
+ 125   3                                      break;
+ 126   3                      }
+ 127   2      
+ 128   2          }
+ 129   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    416    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       8
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,7 @@
+"..\..\out\STARTUP.obj",
+"..\..\out\ds1302.obj",
+"..\..\out\function.obj",
+"..\..\out\iic.obj",
+"..\..\out\main.obj" 
+TO "..\..\out\12345" 
+PRINT(".\Listings\12345.m51") RAMSIZE(256) 

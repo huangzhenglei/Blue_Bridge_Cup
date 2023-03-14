@@ -1,0 +1,148 @@
+[2022-12-31 10:02:10]	[done]
+	build successfully !
+
+[2022-12-31 10:02:54]	[done]
+	build successfully !
+
+[2022-12-31 10:04:25]	[done]
+	build successfully !
+
+[2022-12-31 10:09:38]	[done]
+	build successfully !
+
+[2022-12-31 10:10:50]	[done]
+	build successfully !
+
+[2022-12-31 10:13:20]	[done]
+	build successfully !
+
+[2022-12-31 10:14:12]	[done]
+	build successfully !
+
+[2022-12-31 10:16:09]	[done]
+	build successfully !
+
+[2022-12-31 10:16:44]	compilation failed at : "c:\Users\hzl\Desktop\code\第五届省赛模拟_智能灌溉\scr\main.c", exit code: 2
+   at unify_builder.Program.Main(String[] args_)
+---
+C51 COMPILER V9.60.0.0 - SN: K1DZC-1T4I0C
+COPYRIGHT Copyright (C) 2012 - 2019 ARM Ltd and ARM Germany GmbH. All rights reserved.
+*** ERROR C141 IN LINE 47 OF .\..\..\SCR\MAIN.C: syntax error near ')', expected 'sizeof'
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  1 ERROR(S)
+
+[2022-12-31 10:16:51]	[done]
+	build successfully !
+
+[2022-12-31 10:19:38]	[done]
+	build successfully !
+
+[2022-12-31 10:21:00]	[done]
+	build successfully !
+
+[2022-12-31 10:21:40]	[done]
+	build successfully !
+
+[2022-12-31 10:21:48]	[done]
+	build successfully !
+
+[2022-12-31 10:23:56]	[done]
+	build successfully !
+
+[2022-12-31 10:24:17]	[done]
+	build successfully !
+
+[2022-12-31 10:25:11]	[done]
+	build successfully !
+
+[2022-12-31 10:25:42]	[done]
+	build successfully !
+
+[2022-12-31 10:29:06]	[done]
+	build successfully !
+
+[2022-12-31 10:29:47]	[done]
+	build successfully !
+
+[2022-12-31 10:33:31]	[done]
+	build successfully !
+
+[2022-12-31 10:34:37]	compilation failed at : "c:\Users\hzl\Desktop\code\第五届省赛模拟_智能灌溉\scr\main.c", exit code: 2
+   at unify_builder.Program.Main(String[] args_)
+---
+C51 COMPILER V9.60.0.0 - SN: K1DZC-1T4I0C
+COPYRIGHT Copyright (C) 2012 - 2019 ARM Ltd and ARM Germany GmbH. All rights reserved.
+*** ERROR C141 IN LINE 87 OF .\..\..\SCR\MAIN.C: syntax error near ')', expected 'sizeof'
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  1 ERROR(S)
+
+[2022-12-31 10:34:46]	[done]
+	build successfully !
+
+[2022-12-31 10:34:53]	[done]
+	build successfully !
+
+[2022-12-31 10:35:20]	[done]
+	build successfully !
+
+[2022-12-31 10:36:08]	[done]
+	build successfully !
+
+[2022-12-31 10:36:43]	[done]
+	build successfully !
+
+[2022-12-31 10:37:42]	[done]
+	build successfully !
+
+[2022-12-31 10:38:48]	[done]
+	build successfully !
+
+[2022-12-31 11:42:39]	[done]
+	build successfully !
+
+[2022-12-31 13:06:04]	[done]
+	build successfully !
+
+[2022-12-31 13:07:12]	[done]
+	build successfully !
+
+[2022-12-31 13:12:44]	compilation failed at : "c:\Users\hzl\Desktop\code\第五届省赛模拟_智能灌溉\scr\main.c", exit code: 2
+   at unify_builder.Program.Main(String[] args_)
+---
+C51 COMPILER V9.60.0.0 - SN: K1DZC-1T4I0C
+COPYRIGHT Copyright (C) 2012 - 2019 ARM Ltd and ARM Germany GmbH. All rights reserved.
+*** ERROR C141 IN LINE 24 OF .\..\..\SCR\MAIN.C: syntax error near '253', expected ';'
+*** ERROR C141 IN LINE 25 OF .\..\..\SCR\MAIN.C: syntax error near 'humidity', expected ';'
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  2 ERROR(S)
+
+[2022-12-31 13:12:50]	[done]
+	build successfully !
+
+[2022-12-31 13:13:00]	[done]
+	build successfully !
+
+[2022-12-31 13:13:06]	[done]
+	build successfully !
+
+[2022-12-31 13:13:48]	[done]
+	build successfully !
+
+[2022-12-31 13:16:46]	[done]
+	build successfully !
+
+[2022-12-31 13:19:46]	[done]
+	build successfully !
+
+[2022-12-31 13:21:15]	[done]
+	build successfully !
+
+[2022-12-31 13:21:22]	[done]
+	build successfully !
+
+[2022-12-31 19:48:36]	[done]
+	build successfully !
+
+[2023-01-05 14:40:57]	[done]
+	build successfully !
+

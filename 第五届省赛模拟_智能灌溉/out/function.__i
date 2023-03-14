@@ -1,0 +1,1 @@
+"..\..\scr\function.c" OPTIMIZE (8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\function.lst) OBJECT(..\..\out\function.obj)

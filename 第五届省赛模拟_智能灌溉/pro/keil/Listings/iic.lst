@@ -1,0 +1,321 @@
+C51 COMPILER V9.60.0.0   IIC                                                               02/09/2023 14:36:44 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE IIC
+OBJECT MODULE PLACED IN ..\..\out\iic.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\..\scr\iic.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\List
+                    -ings\iic.lst) OBJECT(..\..\out\iic.obj)
+
+line level    source
+
+   1          #include "iic.h"
+   2          #include <STC15F2K60S2.H>
+   3          #include <intrins.h>
+   4          
+   5          #define DELAY_TIME 5
+   6          
+   7          sbit SDA = P2^1;
+   8          sbit SCL = P2^0;
+   9          
+  10          void Delay5ms()         //@11.0592MHz
+  11          {
+  12   1              unsigned char i, j;
+  13   1      
+  14   1              i = 54;
+  15   1              j = 199;
+  16   1              do
+  17   1              {
+  18   2                      while (--j);
+  19   2              } while (--i);
+  20   1      }
+  21          
+  22          //I2C总线内部延时函数
+  23          void IIC_Delay(unsigned char i)
+  24          {
+  25   1          do{_nop_();}
+  26   1          while(i--);        
+  27   1      }
+  28          
+  29          //I2C总线启动信号
+  30          void IIC_Start(void)
+  31          {
+  32   1          /* 当SCL高电平时，SDA出现一个下降沿表示I2C总线启动信号 */
+  33   1          SDA = 1;                        //将SDA初始化为高电平                
+  34   1          SCL = 1;                        //初SCL始化为高电平
+  35   1          IIC_Delay(DELAY_TIME);
+  36   1          SDA = 0;            
+  37   1          IIC_Delay(DELAY_TIME);
+  38   1          SCL = 0;                        // 拉低SCL开始传输数据
+  39   1      }
+  40          
+  41          //I2C总线停止信号
+  42          void IIC_Stop(void)
+  43          {
+  44   1          /* 当SCL高电平时，SDA出现一个上升沿表示I2C总线停止信号 */
+  45   1          SDA = 0;                        //将SDA初始化为低电平      
+  46   1          SCL = 1;                        //初SCL初始化为高电平         
+  47   1          IIC_Delay(DELAY_TIME);
+  48   1          SDA = 1;                             
+  49   1          IIC_Delay(DELAY_TIME);          
+  50   1      }
+  51          
+  52          //发送应答或非应答信号
+  53          void IIC_SendAck(bit ackbit)
+  54          {
+C51 COMPILER V9.60.0.0   IIC                                                               02/09/2023 14:36:44 PAGE 2   
+
+  55   1          SCL = 0;                        // 拉低SCL开始传输数据                          
+  56   1          SDA = ackbit;                           //要发送的信号，发应答信号或者非应答信号                    
+  57   1          IIC_Delay(DELAY_TIME);
+  58   1          SCL = 1;                        // 拉高SCL           
+  59   1          IIC_Delay(DELAY_TIME);
+  60   1          SCL = 0;                       
+  61   1          SDA = 1;                       
+  62   1          IIC_Delay(DELAY_TIME);
+  63   1      }
+  64          
+  65          //等待应答
+  66          bit IIC_WaitAck(void)
+  67          {
+  68   1          bit ackbit;
+  69   1              
+  70   1          SCL  = 1;                   // 拉高时钟线
+  71   1          IIC_Delay(DELAY_TIME);
+  72   1          ackbit = SDA;               // 获取数据线的电平
+  73   1          SCL = 0;                    // 拉低SCL开始传输数据
+  74   1          IIC_Delay(DELAY_TIME);
+  75   1          return ackbit;              //返回信号
+  76   1      }
+  77          
+  78          //I2C总线发送一个字节数据
+  79          void IIC_SendByte(unsigned char byt)
+  80          {
+  81   1          unsigned char i;
+  82   1      
+  83   1          for(i=0; i<8; i++)
+  84   1          {
+  85   2              SCL  = 0;                       // 拉低SCL开始传输数据  
+  86   2              IIC_Delay(DELAY_TIME);
+  87   2              if(byt & 0x80) SDA  = 1;        //先把高位取出来，给SDA幅值
+  88   2              else SDA  = 0;
+  89   2              IIC_Delay(DELAY_TIME);
+  90   2              SCL = 1;                        //准备下一个数据
+  91   2              byt <<= 1;                     
+  92   2              IIC_Delay(DELAY_TIME);
+  93   2          }
+  94   1          SCL  = 0;  
+  95   1      }
+  96          
+  97          //I2C总线接收一个字节数据
+  98          unsigned char IIC_RecByte(void)
+  99          {
+ 100   1          unsigned char i, da;
+ 101   1          for(i=0; i<8; i++)              
+ 102   1          {   
+ 103   2              SCL = 1;                    //准备接收数据
+ 104   2              IIC_Delay(DELAY_TIME);
+ 105   2              da <<= 1;                       //向左移一位
+ 106   2              if(SDA) da |= 1;                //获取这一位的数据
+ 107   2              SCL = 0;                        //准备下一个传输数据 
+ 108   2              IIC_Delay(DELAY_TIME);
+ 109   2          }
+ 110   1          return da;    
+ 111   1      }
+ 112          
+ 113          /**
+ 114           * @brief 往AT24C02写一个数据进去
+ 115           * @note 注意这是8位，地址范围为0~255，数据范围为0~255
+ 116           * @param addr 存放数据的地址
+C51 COMPILER V9.60.0.0   IIC                                                               02/09/2023 14:36:44 PAGE 3   
+
+ 117           * @param date 所要存放的数据大小
+ 118           */
+ 119          void EEPROM_Write(unsigned char addr, unsigned char date)
+ 120          {
+ 121   1          IIC_Start();                    //起始信号
+ 122   1      
+ 123   1          IIC_SendByte(0xa0);             //发送器件的地址并使用写数据功能
+ 124   1          IIC_WaitAck();                  //等待应答
+ 125   1      
+ 126   1          IIC_SendByte(addr);             //发送存储数据的地址
+ 127   1          IIC_WaitAck();                  //等待应答
+ 128   1      
+ 129   1          IIC_SendByte(date);             //发送要存储的数据          
+ 130   1          IIC_WaitAck();                  //等待应答
+ 131   1      
+ 132   1          IIC_Stop();                     //停止信号
+ 133   1      }
+ 134          
+ 135          /**
+ 136           * @brief 往AT24C02读取一个数据出来
+ 137           * 
+ 138           * @param addr 读取数据的地址
+ 139           * @return unsigned char 返回读取的数据
+ 140           */
+ 141          unsigned char EEPROM_Read(unsigned char addr)
+ 142          {
+ 143   1      
+ 144   1          unsigned char temp = 0;
+ 145   1      
+ 146   1          IIC_Start();                //起始信号
+ 147   1      
+ 148   1          IIC_SendByte(0xa0);         //发送器件的地址并使用写数据功能
+ 149   1          IIC_WaitAck();              //等待应答
+ 150   1      
+ 151   1          IIC_SendByte(addr);         //发送要读取数据的地址
+ 152   1          IIC_WaitAck();              //等待应答
+ 153   1      
+ 154   1          IIC_Start();                //读写转换时，需重新启用IIC总线          
+ 155   1      
+ 156   1          IIC_SendByte(0xa1);         //发送器件的地址并使用读数据功能
+ 157   1          IIC_WaitAck();              //等待应答
+ 158   1      
+ 159   1          temp = IIC_RecByte();       //读数数据
+ 160   1          IIC_SendAck(1);             //发送非应答信号，告诉芯片我后面不读数据了
+ 161   1      
+ 162   1          IIC_Stop();                 //停止信号，停止通信      
+ 163   1      
+ 164   1          return temp;                //将读取的数据返回
+ 165   1      }
+ 166          
+ 167          /**
+ 168           * @brief 往AT24C02连续写数据进去
+ 169           * @note 这种连续写法，要注意延时
+ 170           * @param addr 写数据的起始地址
+ 171           * @param date 存放的数据地址
+ 172           * @param number 往AT24C02写多少个数据
+ 173           */
+ 174          void EEPROM_ContinuousWrite(unsigned char addr, unsigned char date[], unsigned char number)
+ 175          {
+ 176   1          while(number--)                          //控制写多少个数据             
+ 177   1          {
+ 178   2              EEPROM_Write(addr++, *date++);       //多次调用EEPROM_Write函数往里面写数据
+C51 COMPILER V9.60.0.0   IIC                                                               02/09/2023 14:36:44 PAGE 4   
+
+ 179   2              Delay5ms();                          //写进AT24C02需要一定的时间
+ 180   2          }
+ 181   1      }
+ 182          
+ 183          /**
+ 184           * @brief 连续从AT24C02读数据
+ 185           * 
+ 186           * @param addr 读数据的起始地址
+ 187           * @param date 读取数据存放的地址
+ 188           * @param num 读多少个数据
+ 189           * @return 无
+ 190           */
+ 191          void EEPROM_ContinuousRead(unsigned char addr, unsigned char date[], unsigned char number)
+ 192          {
+ 193   1          
+ 194   1          IIC_Start();                 //起始信号
+ 195   1      
+ 196   1          IIC_SendByte(0xa0);          //发送器件的地址并使用写数据功能
+ 197   1          IIC_WaitAck();               //等待应答
+ 198   1      
+ 199   1          IIC_SendByte(addr);          //发送要读取数据的地址
+ 200   1          IIC_WaitAck();               //等待应答
+ 201   1      
+ 202   1          IIC_Start();                 //起始信号
+ 203   1          IIC_SendByte(0xa1);          //发送器件的地址并使用读数据功能
+ 204   1          IIC_WaitAck();               //等待应答          
+ 205   1      
+ 206   1          while(number--)              //控制读取多少个数据
+ 207   1          {
+ 208   2              *date++ = IIC_RecByte(); //读数据，并指向下一个地址来接收下一个数据
+ 209   2      
+ 210   2              if(number != 0)          //如果不是读取最后一个数据发送应答信号，否则发送非应答信号
+ 211   2              {
+ 212   3                  IIC_SendAck(0);      //发送应答信号
+ 213   3              }
+ 214   2              else
+ 215   2              {
+ 216   3                  IIC_SendAck(1);      //发送非应答信号
+ 217   3              }
+ 218   2          }
+ 219   1      
+ 220   1          IIC_Stop();                   //停止使用IIC总线  
+ 221   1      }
+ 222          
+ 223          /**
+ 224           * @brief PCF8591_DAC输出
+ 225           * @note 参考电压5V，8位数据
+ 226           * @param date：需要转化的数据，范围为0~255
+ 227           * @return 无
+ 228           */
+ 229          void PCF8591_DAC(unsigned char date)
+ 230          {
+ 231   1          IIC_Start();                     //起始信号
+ 232   1      
+ 233   1          IIC_SendByte(0x90);              //发送器件的地址并使用写数据功能
+ 234   1          IIC_WaitAck();                   //等待应答        
+ 235   1      
+ 236   1          IIC_SendByte(0x40);              //启用DAC模式，输出到通道OUT 
+ 237   1          IIC_WaitAck();                   //等待应答  
+ 238   1      
+ 239   1          IIC_SendByte(date);              //发送要转换的数据 
+ 240   1          IIC_WaitAck();                   //等待应答 
+C51 COMPILER V9.60.0.0   IIC                                                               02/09/2023 14:36:44 PAGE 5   
+
+ 241   1      
+ 242   1          IIC_Stop();                      //停止使用IIC总线 
+ 243   1      } 
+ 244          
+ 245          /**
+ 246           * @brief PCF8591_ADC初始化
+ 247           * 
+ 248           * @param channel：ADC转化通道
+ 249           *          @arg：0x00：通道0，未使用
+ 250           *          @arg：0x01：通道1，光敏电阻
+ 251           *          @arg：0x02：通道2，外接输入
+ 252           *          @arg：0x03：通道3，电位器
+ 253           * @return 无
+ 254           */
+ 255          void PCF8591_ADC_Init(unsigned char channel)
+ 256          {
+ 257   1          IIC_Start();                        //启用IIC总线 
+ 258   1      
+ 259   1          IIC_SendByte(0x90);                 //发送器件的地址并使用写数据功能
+ 260   1          IIC_WaitAck();                      //等待应答
+ 261   1      
+ 262   1          IIC_SendByte(channel);              //启用ADC模式，发送转换通道
+ 263   1          IIC_WaitAck();                      //等待应答
+ 264   1      
+ 265   1          IIC_Stop();                         //停止使用IIC总线 
+ 266   1      }
+ 267          
+ 268          /**
+ 269           * @brief 获取PCF8591_ADC的转换结果
+ 270           * @note 参考电压5V，8位数据
+ 271           * @param 无
+ 272           * @return 返回转换结果
+ 273           */
+ 274          unsigned char PCF8591_ADC_Get()
+ 275          {
+ 276   1          unsigned char date = 0;
+ 277   1      
+ 278   1          IIC_Start();                    //启用IIC总线 
+ 279   1      
+ 280   1          IIC_SendByte(0x91);             //发送器件地址并使用读数据功能
+ 281   1          IIC_WaitAck();                  //等待应答
+ 282   1      
+ 283   1          date = IIC_RecByte();           //接收转换好的数据
+ 284   1          IIC_SendAck(1);                 //发送非应答信号    
+ 285   1      
+ 286   1          IIC_Stop();                     //停止使用IIC总线
+ 287   1      
+ 288   1          return date;                    //返回转换结果
+ 289   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    448    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      10
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----       2
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

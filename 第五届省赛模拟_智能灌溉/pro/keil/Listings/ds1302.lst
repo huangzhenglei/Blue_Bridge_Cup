@@ -1,0 +1,126 @@
+C51 COMPILER V9.60.0.0   DS1302                                                            02/09/2023 14:36:44 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE DS1302
+OBJECT MODULE PLACED IN ..\..\out\ds1302.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\..\scr\ds1302.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\L
+                    -istings\ds1302.lst) OBJECT(..\..\out\ds1302.obj)
+
+line level    source
+
+   1          #include "ds1302.h"                                                                     
+   2          #include <STC15F2K60S2.H>
+   3          #include <intrins.h>
+   4          
+   5          sbit SCK = P1^7;                
+   6          sbit SDA = P2^3;                
+   7          sbit RST = P1^3; 
+   8          
+   9          unsigned char Hour = 0;
+  10          unsigned char Min = 0;
+  11          unsigned char Sec = 0;
+  12          
+  13          //写字节
+  14          void Write_Ds1302(unsigned  char temp) 
+  15          {
+  16   1              unsigned char i;
+  17   1              for (i=0;i<8;i++)       
+  18   1              { 
+  19   2                      SCK = 0;                                        //拉低SCLK，为脉冲上升沿写入数据做好准备
+  20   2                      SDA = temp&0x01;                        //取出dat的第0位数据写入ds1302
+  21   2                      temp>>=1;                                       //将dat的各数据位右移1位，准备写入下一个数据位  
+  22   2                      SCK=1;                                          //上升沿写入数据
+  23   2              }
+  24   1      }   
+  25          
+  26          //向DS1302寄存器写入数据
+  27          void Write_Ds1302_Byte( unsigned char address,unsigned char dat )     
+  28          {
+  29   1              RST=0;  _nop_();                                        //禁止数据传递
+  30   1              SCK=0;  _nop_();                                        //确保写数据前SCLK被拉低
+  31   1              RST=1;  _nop_();                                        //启动数据传输
+  32   1              Write_Ds1302(address);                          //写入命令字
+  33   1              Write_Ds1302(dat);                                      //写数据
+  34   1              RST=0;                                                          //禁止数据传递
+  35   1      }
+  36          
+  37          //从DS1302寄存器读出数据
+  38          unsigned char Read_Ds1302_Byte ( unsigned char address )
+  39          {
+  40   1              unsigned char i,temp=0x00;
+  41   1              RST=0;  _nop_();                                        //拉低RST
+  42   1              SCK=0;  _nop_();                                        //确保写数居前SCLK被拉低
+  43   1              RST=1;  _nop_();                                        //启动数据传输
+  44   1              Write_Ds1302(address);                          //写入命令字
+  45   1              for (i=0;i<8;i++)                                       //读出数据
+  46   1              {               
+  47   2                      SCK=0;                                                  //拉低SCLK，为脉冲上升沿写入数据做好准备                        
+  48   2                      temp>>=1;                                               //将dat的各数据位右移1位，因为先读出的是字节的最低位
+  49   2      
+  50   2                      if(SDA)                                                 //将取出一位数据，写在dat的最高位
+  51   2                              temp|=0x80;     
+  52   2      
+  53   2                      SCK=1;                                                  //将SCLK置于高电平，为下降沿读出
+  54   2              } 
+C51 COMPILER V9.60.0.0   DS1302                                                            02/09/2023 14:36:44 PAGE 2   
+
+  55   1              RST=0;  _nop_();                                        //禁止数据传递                                  
+  56   1              SCK=0;  _nop_();                                        //将时钟电平置于已知状态
+  57   1              SCK=1;  _nop_();
+  58   1              SDA=0;  _nop_();                                        //将信号电平置于已知状态
+  59   1              SDA=1;  _nop_();
+  60   1              return (temp);                  
+  61   1      }
+  62          
+  63          /**
+  64           * @brief RTC芯片设置时间
+  65           * @note 数据范围，使用24小时制
+  66           * @param hour：小时数
+  67           * @param minute：分钟数
+  68           * @param second：秒数
+  69           * @return 无
+  70           */
+  71          void DS1302_Write(unsigned char second, unsigned char minute, unsigned char hour)
+  72          {                                                     
+  73   1              Write_Ds1302_Byte(0x8e, 0x00);                  //清楚写保护位
+  74   1      
+  75   1              Write_Ds1302_Byte(0x80, ((second / 10) << 4) + (second % 10));                  //写秒
+  76   1              Write_Ds1302_Byte(0x82, ((minute / 10) << 4) + (minute % 10));                  //写分钟
+  77   1              Write_Ds1302_Byte(0x84, ((hour / 10) << 4) + (hour % 10));                              //写小时
+  78   1      
+  79   1              Write_Ds1302_Byte(0x8e, 0x80);                  //开启写保护写
+  80   1      }
+  81          
+  82          /**
+  83           * @brief 获取RTC内部时间数据
+  84           * @note 数据范围，24小时制，并使用全局变量存储读数的数据（Hour，Min，Sec）
+  85           * @param 无
+  86           * @return 无
+  87           */
+  88          void DS1302_Read()
+  89          {
+  90   1              unsigned char second, minute, hour;
+  91   1      
+  92   1              second = Read_Ds1302_Byte(0x81);                                        //读出秒的数据
+  93   1              minute = Read_Ds1302_Byte(0x83);                                        //读出分的数据
+  94   1              hour = Read_Ds1302_Byte(0x85);                                          //读出时的数据
+  95   1      
+  96   1              Hour = ((hour >> 4) * 10) + (hour & 0x0f);                      //将BCD码形式的秒、分、时，转化为10进制
+  97   1              Min = ((minute >> 4) * 10) + (minute & 0x0f);
+  98   1              Sec = ((second >> 4) * 10) + (second & 0x0f);
+  99   1      }
+ 100          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    261    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      3    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
